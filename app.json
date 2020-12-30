@@ -1,0 +1,12 @@
+{
+  "name": "nativePractice",
+  "displayName": "nativePractice",
+  "expo": {
+    "name": "nativePractice",
+    "slug": "nativePractice",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
