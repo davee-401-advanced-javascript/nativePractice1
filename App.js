@@ -23,7 +23,7 @@ export default function App() {
   };
 
   const _fast = () => {
-    Accelerometer.setUpdateInterval(100);
+    Accelerometer.setUpdateInterval(50);
   };
 
   const _subscribe = () => {
@@ -44,12 +44,6 @@ export default function App() {
     // find count down timer
     // find buzz
     // find sound
-  
-  // start accelerometer
-    // record data
-  // after 3 seconds
-  // stop accelerometer
-  // processs highest value in the array
 
   const startButton = () => {
 
@@ -75,6 +69,7 @@ export default function App() {
     setTimeout(() => {
       console.log('Ending Subscription');
       Accelerometer.removeAllListeners();
+      
       console.log('xArray:', xArray);
       console.log('yArray:', yArray);
       console.log('zArray:', zArray);
@@ -101,7 +96,6 @@ export default function App() {
         highest = Math.abs(arr1[i]);
       }
     }
-
     return highest;
   }
 
@@ -143,9 +137,9 @@ export default function App() {
       
       <View style={styles.buttonContainer}>
 
-        <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe} style={styles.button}>
+        {/* <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe} style={styles.button}>
           <Text>{subscription ? 'On' : 'Off'}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity onPress={_slow} style={[styles.button, styles.middleButton]}>
           <Text>Slow</Text>
