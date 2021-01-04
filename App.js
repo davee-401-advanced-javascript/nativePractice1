@@ -1,10 +1,7 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useEffect, Component, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 
-import { Container, Header, Content } from 'native-base';
-
-import { Button } from 'native-base';
 
 export default function App() {
 
@@ -14,16 +11,21 @@ export default function App() {
     z: 0,
   });
 
-  const [subscription, setSubscription] = useState(null);
+  const { x, y, z } = data;
 
+  const [subscription, setSubscription] = useState(null);
   const [personScore, setPersonScore] = useState(0);
+
+  const xRef = useRef([]);
+  const yRef = useRef([]);
+  const zRef = useRef([]);
 
   const _slow = () => {
     Accelerometer.setUpdateInterval(1000);
   };
 
   const _fast = () => {
-    Accelerometer.setUpdateInterval(100);
+    Accelerometer.setUpdateInterval(50);
   };
 
   const _subscribe = () => {
@@ -40,23 +42,69 @@ export default function App() {
   };
 
 
+  // create 3 second timer
+    // find count down timer
+    // find buzz
+    // find sound
+
   const startButton = () => {
-    // create 3 second timer
-      // find count down timer
-      // find buzz
-      // find sound
-    
+
+    xRef.current = [];
+    yRef.current = [];
+    zRef.current = [];
+
+    console.log('Starting Subscription');
+    console.log('Start xRef:', xRef);
+    console.log('Start yRef:', yRef);
+    console.log('Start zRef:', zRef);
+
+    setSubscription(
+      Accelerometer.addListener(accelerometerData => {
+        setData(accelerometerData);
+        xRef.current = [...xRef.current, accelerometerData.x];
+        yRef.current = [...yRef.current, accelerometerData.y];
+        zRef.current = [...zRef.current, accelerometerData.z];
+
+      })
+    );
+
+ 
+    setTimeout(() => {
+      console.log('Ending Subscription');
+      Accelerometer.removeAllListeners();
+
+      console.log('xArray:', xRef.current);
+      console.log('yArray:', yRef.current);
+      console.log('zArray:', zRef.current);
+
+      let highest = findHighestValue(xRef.current, yRef.current, zRef.current).toFixed(2);
+      setPersonScore(highest);
+    }, 3000);
+
   }
 
-  // useEffect(() => {
-  //   // _subscribe();
-  //   // return () => _unsubscribe();
-  // }, []);
 
-  const { x, y, z } = data;
+  function findHighestValue(arr1, arr2, arr3) {
+
+    let highest = 0;
+
+    for(let i = 0; i < arr1.length; i++) {
+      if(Math.abs(arr1[i]) > highest) {
+        highest = Math.abs(arr1[i]);
+      }
+      if(Math.abs(arr2[i]) > highest) {
+        highest = Math.abs(arr1[i]);
+      }
+      if(Math.abs(arr3[i]) > highest) {
+        highest = Math.abs(arr1[i]);
+      }
+    }
+    return highest;
+  }
 
 
 
+  
 
 
   return (
@@ -66,14 +114,15 @@ export default function App() {
         <Text style={styles.titleText}>Measure your Punch Speed</Text>
       </View>
 
+
       <View style={styles.scoreArea}>
-        <Text > Your Accelleration: </Text>
-        <Text style={styles.score}> {personScore} </Text>
+        <Text style={styles.scoreText}> Your MAX Acceleration: </Text>
+        <Text style={styles.score}> {personScore} g</Text>
       </View>
 
       <View style={styles.recordArea}>
         <Text style={styles.text}> Press Start to Record</Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity onPress={startButton} style={styles.button}>
           <Text>START</Text>
         </TouchableOpacity>
       </View>
@@ -86,9 +135,9 @@ export default function App() {
       
       <View style={styles.buttonContainer}>
 
-        <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe} style={styles.button}>
+        {/* <TouchableOpacity onPress={subscription ? _unsubscribe : _subscribe} style={styles.button}>
           <Text>{subscription ? 'On' : 'Off'}</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity onPress={_slow} style={[styles.button, styles.middleButton]}>
           <Text>Slow</Text>
@@ -129,23 +178,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   scoreArea: {
-    height: '25%',
-    width: '60%',
+    height: '20%',
+    width: '80%',
     backgroundColor: 'lightgreen',
     alignItems: 'center',
-    marginLeft: '20%'
+    marginLeft: '10%'
+  },
+  scoreText: {
+    marginTop: 25
   },
   score: {
     fontSize: 80
   },
   recordArea: {
     height: '10%',
-    marginTop: 20,
+    marginTop: 40,
     borderColor: 'black',
     marginBottom: 100
   },
   text: {
     textAlign: 'center',
+    margin: 10
   },
   buttonContainer: {
     flexDirection: 'row',
