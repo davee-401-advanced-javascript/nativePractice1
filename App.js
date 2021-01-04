@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Component } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
+
+import { Container, Header, Content } from 'native-base';
 
 import { Button } from 'native-base';
 
@@ -13,6 +15,8 @@ export default function App() {
   });
 
   const [subscription, setSubscription] = useState(null);
+
+  const [personScore, setPersonScore] = useState(0);
 
   const _slow = () => {
     Accelerometer.setUpdateInterval(1000);
@@ -35,10 +39,19 @@ export default function App() {
     setSubscription(null);
   };
 
-  useEffect(() => {
-    _subscribe();
-    // return () => _unsubscribe();
-  }, []);
+
+  const startButton = () => {
+    // create 3 second timer
+      // find count down timer
+      // find buzz
+      // find sound
+    
+  }
+
+  // useEffect(() => {
+  //   // _subscribe();
+  //   // return () => _unsubscribe();
+  // }, []);
 
   const { x, y, z } = data;
 
@@ -55,13 +68,13 @@ export default function App() {
 
       <View style={styles.scoreArea}>
         <Text > Your Accelleration: </Text>
-        <Text style={styles.score}> 10 </Text>
+        <Text style={styles.score}> {personScore} </Text>
       </View>
 
       <View style={styles.recordArea}>
         <Text style={styles.text}> Press Start to Record</Text>
-        <TouchableOpacity >
-          <Text style={styles.text}>START</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text>START</Text>
         </TouchableOpacity>
       </View>
 
@@ -126,9 +139,10 @@ const styles = StyleSheet.create({
     fontSize: 80
   },
   recordArea: {
-    height: '20%',
+    height: '10%',
     marginTop: 20,
-    borderColor: 'black'
+    borderColor: 'black',
+    marginBottom: 100
   },
   text: {
     textAlign: 'center',
