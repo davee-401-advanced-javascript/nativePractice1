@@ -2,9 +2,6 @@ import React, { useState, useEffect, Component } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 
-import { Container, Header, Content } from 'native-base';
-
-import { Button } from 'native-base';
 
 export default function App() {
 
@@ -15,8 +12,11 @@ export default function App() {
   });
 
   const [subscription, setSubscription] = useState(null);
-
   const [personScore, setPersonScore] = useState(0);
+
+  const [xArray, setXArray] = useState([]);
+  const [yArray, setYArray] = useState([]);
+  const [zArray, setZArray] = useState([]);
 
   const _slow = () => {
     Accelerometer.setUpdateInterval(1000);
@@ -40,13 +40,72 @@ export default function App() {
   };
 
 
+  // create 3 second timer
+    // find count down timer
+    // find buzz
+    // find sound
+  
+  // start accelerometer
+    // record data
+  // after 3 seconds
+  // stop accelerometer
+  // processs highest value in the array
+
   const startButton = () => {
-    // create 3 second timer
-      // find count down timer
-      // find buzz
-      // find sound
-    
+
+    setXArray([]);
+    setYArray([]);
+    setZArray([]);
+
+    console.log('Starting Subscription');
+    console.log('Start xArray:', xArray);
+    console.log('Start yArray:', yArray);
+    console.log('Start zArray:', zArray);
+
+    setSubscription(
+      Accelerometer.addListener(accelerometerData => {
+        setData(accelerometerData);
+        setXArray(prevXArray => [...prevXArray, accelerometerData.x]);
+        setYArray(prevYArray => [...prevYArray, accelerometerData.y]);
+        setZArray(prevZArray => [...prevZArray, accelerometerData.z]);
+      })
+    );
+
+ 
+    setTimeout(() => {
+      console.log('Ending Subscription');
+      Accelerometer.removeAllListeners();
+      console.log('xArray:', xArray);
+      console.log('yArray:', yArray);
+      console.log('zArray:', zArray);
+
+      let highest = findHighestValue(xArray, yArray, zArray).toFixed(2);
+      setPersonScore(highest);
+    }, 3000);
+
   }
+
+
+  function findHighestValue(arr1, arr2, arr3) {
+
+    let highest = 0;
+
+    for(let i = 0; i < arr1.length; i++) {
+      if(Math.abs(arr1[i]) > highest) {
+        highest = Math.abs(arr1[i]);
+      }
+      if(Math.abs(arr2[i]) > highest) {
+        highest = Math.abs(arr1[i]);
+      }
+      if(Math.abs(arr3[i]) > highest) {
+        highest = Math.abs(arr1[i]);
+      }
+    }
+
+    return highest;
+  }
+
+
 
   // useEffect(() => {
   //   // _subscribe();
@@ -56,9 +115,6 @@ export default function App() {
   const { x, y, z } = data;
 
 
-
-
-
   return (
     <View style={styles.container}>
 
@@ -66,14 +122,15 @@ export default function App() {
         <Text style={styles.titleText}>Measure your Punch Speed</Text>
       </View>
 
+
       <View style={styles.scoreArea}>
-        <Text > Your Accelleration: </Text>
-        <Text style={styles.score}> {personScore} </Text>
+        <Text style={styles.scoreText}> Your MAX Acceleration: </Text>
+        <Text style={styles.score}> {personScore} g</Text>
       </View>
 
       <View style={styles.recordArea}>
         <Text style={styles.text}> Press Start to Record</Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity onPress={startButton} style={styles.button}>
           <Text>START</Text>
         </TouchableOpacity>
       </View>
@@ -129,23 +186,27 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   scoreArea: {
-    height: '25%',
-    width: '60%',
+    height: '20%',
+    width: '80%',
     backgroundColor: 'lightgreen',
     alignItems: 'center',
-    marginLeft: '20%'
+    marginLeft: '10%'
+  },
+  scoreText: {
+    marginTop: 25
   },
   score: {
     fontSize: 80
   },
   recordArea: {
     height: '10%',
-    marginTop: 20,
+    marginTop: 40,
     borderColor: 'black',
     marginBottom: 100
   },
   text: {
     textAlign: 'center',
+    margin: 10
   },
   buttonContainer: {
     flexDirection: 'row',
