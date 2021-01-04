@@ -87,7 +87,6 @@ export default function App() {
   function findHighestValue(arr1, arr2, arr3) {
 
     let highest = 0;
-
     for(let i = 0; i < arr1.length; i++) {
       if(Math.abs(arr1[i]) > highest) {
         highest = Math.abs(arr1[i]);
@@ -149,6 +148,12 @@ export default function App() {
 
       </View>
 
+      <View style={styles.recordArea}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.leaderBoardText}>Leader Boards</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 }
@@ -180,7 +185,7 @@ const styles = StyleSheet.create({
   scoreArea: {
     height: '20%',
     width: '80%',
-    backgroundColor: 'lightgreen',
+    backgroundColor: 'rgb(9, 205, 9)',
     alignItems: 'center',
     marginLeft: '10%'
   },
@@ -217,4 +222,7 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderColor: '#ccc',
   },
+  leaderBoardText: {
+    fontSize: 20
+  }
 });
