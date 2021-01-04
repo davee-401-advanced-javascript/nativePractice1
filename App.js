@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useEffect, Component, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Accelerometer } from 'expo-sensors';
 
@@ -11,12 +11,14 @@ export default function App() {
     z: 0,
   });
 
+  const { x, y, z } = data;
+
   const [subscription, setSubscription] = useState(null);
   const [personScore, setPersonScore] = useState(0);
 
-  const [xArray, setXArray] = useState([]);
-  const [yArray, setYArray] = useState([]);
-  const [zArray, setZArray] = useState([]);
+  const xRef = useRef([]);
+  const yRef = useRef([]);
+  const zRef = useRef([]);
 
   const _slow = () => {
     Accelerometer.setUpdateInterval(1000);
@@ -47,21 +49,22 @@ export default function App() {
 
   const startButton = () => {
 
-    setXArray([]);
-    setYArray([]);
-    setZArray([]);
+    xRef.current = [];
+    yRef.current = [];
+    zRef.current = [];
 
     console.log('Starting Subscription');
-    console.log('Start xArray:', xArray);
-    console.log('Start yArray:', yArray);
-    console.log('Start zArray:', zArray);
+    console.log('Start xRef:', xRef);
+    console.log('Start yRef:', yRef);
+    console.log('Start zRef:', zRef);
 
     setSubscription(
       Accelerometer.addListener(accelerometerData => {
         setData(accelerometerData);
-        setXArray(prevXArray => [...prevXArray, accelerometerData.x]);
-        setYArray(prevYArray => [...prevYArray, accelerometerData.y]);
-        setZArray(prevZArray => [...prevZArray, accelerometerData.z]);
+        xRef.current = [...xRef.current, accelerometerData.x];
+        yRef.current = [...yRef.current, accelerometerData.y];
+        zRef.current = [...zRef.current, accelerometerData.z];
+
       })
     );
 
@@ -69,12 +72,12 @@ export default function App() {
     setTimeout(() => {
       console.log('Ending Subscription');
       Accelerometer.removeAllListeners();
-      
-      console.log('xArray:', xArray);
-      console.log('yArray:', yArray);
-      console.log('zArray:', zArray);
 
-      let highest = findHighestValue(xArray, yArray, zArray).toFixed(2);
+      console.log('xArray:', xRef.current);
+      console.log('yArray:', yRef.current);
+      console.log('zArray:', zRef.current);
+
+      let highest = findHighestValue(xRef.current, yRef.current, zRef.current).toFixed(2);
       setPersonScore(highest);
     }, 3000);
 
@@ -101,12 +104,7 @@ export default function App() {
 
 
 
-  // useEffect(() => {
-  //   // _subscribe();
-  //   // return () => _unsubscribe();
-  // }, []);
-
-  const { x, y, z } = data;
+  
 
 
   return (
